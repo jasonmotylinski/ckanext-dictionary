@@ -30,7 +30,6 @@ log = logging.getLogger(__name__)
 
 render = base.render
 abort = base.abort
-redirect = base.redirect
 
 
 NotFound = logic.NotFound
@@ -244,13 +243,13 @@ class DDController(BaseController):
                 get_action('package_update')(
                     dict(context, allow_state_change=True),
                     dict(data_dict, state='active'))
-                redirect(h.url_for(controller='package',
-                                   action='read', id=id))
+                h.redirect_to(controller='package',
+                                   action='read', id=id)
             elif save_action == 'go-dataset':
-                redirect(h.url_for(controller="package", action="new_resource", id=id))
+                h.redirect_to(controller="package", action="new_resource", id=id)
         #print("!!!!!!!!!!! the value of temp is",temp, id)
         print("!!!!!!!!!!!!")
-        redirect(h.url_for(controller='package', action='read', id=id))
+        h.redirect_to(controller='package', action='read', id=id)
 
 
     def new_resource_ext(self, id, data=None, errors=None, error_summary=None):
@@ -260,8 +259,7 @@ class DDController(BaseController):
 	print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IN NEW_RESOURCE_EXT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         if request.method == 'POST' and not data:
             save_action = request.params.get('save')
-            #if save_action == 'go-datadict':
-                #redirect(h.url_for(controller='package', action='addDictionary'))
+
             data = data or \
                 clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
                                                            request.POST))))
@@ -270,13 +268,7 @@ class DDController(BaseController):
             #if 'id' in data.keys()and save_action=="go-dataset-final":
             #print("Id found","and the path is: ",request.path)
             resource_id = data['id']
-            #redirect(h.url_for(controller='package',action='read',id=id))
-            #request.path.split("/")[2]))
-            #else:
-            #print("In else part",id," and the request path is: ", request.path)
-            #if save_action == 'go-dataset-final':
-            #redirect(h.url_for(controller='package',action='new_resource',id=id))
-            #request.path.split("/")[2]))
+
 
             del data['id']
 
@@ -294,8 +286,8 @@ class DDController(BaseController):
             if not data_provided and save_action != "go-dataset-complete":
                 if save_action == 'go-dataset':
                     # go to final stage of adddataset
-                    redirect(h.url_for(controller='package',
-                                       action='edit', id=id))
+                    h.redirect_to(controller='package',
+                                       action='edit', id=id)
                 # see if we have added any resources
                 try:
                     data_dict = get_action('package_show')(context, {'id': id})
@@ -310,8 +302,8 @@ class DDController(BaseController):
                     # On new templates do not use flash message
                     if g.legacy_templates:
                         h.flash_error(msg)
-                        redirect(h.url_for(controller='package',
-                                           action='new_resource', id=id))
+                        h.redirect_to(controller='package',
+                                           action='new_resource', id=id)
                     else:
                         errors = {}
                         error_summary = {_('Error'): msg}
@@ -322,8 +314,8 @@ class DDController(BaseController):
                 get_action('package_update')(
                     dict(context, allow_state_change=True),
                     dict(data_dict, state='active'))
-                redirect(h.url_for(controller='package',
-                                   action='read', id=id))
+                h.redirect_to(controller='package',
+                                   action='read', id=id)
 
             data['package_id'] = id
             try:
@@ -347,36 +339,23 @@ class DDController(BaseController):
                 get_action('package_update')(
                     dict(context, allow_state_change=True),
                     dict(data_dict, state='active'))
-                redirect(h.url_for(controller='package',
-                                   action='read', id=id))
+                h.redirect_to(controller='package',
+                                   action='read', id=id)
             elif save_action == 'go-datadict':
-                #if not len(data_dict['resources']):
-                    # no data so keep on page
-                    #msg = _('You must add at least one data resource')
-                    # On new templates do not use flash message
-                    #if g.legacy_templates:
-                        #h.flash_error(msg)
-                        #redirect(h.url_for(controller='package',action='new_resource', id=id))
-                    #else:
-                        #errors = {}
-                        #error_summary = {_('Error'): msg}
-                        #return self.new_resource(id, data, errors,
-                                                 #error_summary)
                 print('save action was go-datadict in the exntenstion NEEWWWW!!!!!!!!!!!')
-                redirect(h.url_for(str("/dataset/dictionary/add/"+id)))
-		#redirect(h.url_for(controller='package', action='finaldict', id=id))
+                h.redirect_to(str("/dataset/dictionary/add/"+id))
             elif save_action == 'go-dataset':
                 # go to first stage of add dataset
-                redirect(h.url_for(controller='package',
-                                   action='edit', id=id))
+                h.redirect_to(controller='package',
+                                   action='edit', id=id)
             elif save_action == 'go-dataset-complete':
                 # go to first stage of add dataset
-                redirect(h.url_for(controller='package',
-                                   action='read', id=id))
+                h.redirect_to(controller='package',
+                                   action='read', id=id)
             else:
                 # add more resources
-                redirect(h.url_for(controller='package',
-                                   action='new_resource', id=id))
+                h.redirect_to(controller='package',
+                                   action='new_resource', id=id)
 
         # get resources for sidebar
         context = {'model': model, 'session': model.Session,
@@ -422,50 +401,6 @@ class DDController(BaseController):
             abort(404, _('Dataset not found'))
         except NotAuthorized:
             abort(401, _('Unauthorized to read dataset %s') % id)
-
-        #if request.method == 'POST':
-            #new_group = request.POST.get('group_added')
-            #if new_group:
-                #data_dict = {"id": new_group,
-                             #"object": id,
-                             #"object_type": 'package',
-                             #"capacity": 'public'}
-                #try:
-                    #get_action('member_create')(context, data_dict)
-                #except NotFound:
-                    #abort(404, _('Group not found'))
-
-            #removed_group = None
-            #for param in request.POST:
-                #if param.startswith('group_remove'):
-                    #removed_group = param.split('.')[-1]
-                    #break
-            #if removed_group:
-                #data_dict = {"id": removed_group,
-                             #"object": id,
-                             #"object_type": 'package'}
-
-                #try:
-                    #get_action('member_delete')(context, data_dict)
-                #except NotFound:
-                    #abort(404, _('Group not found'))
-            #redirect(h.url_for(controller='package',
-                               #action='groups', id=id))
-
-        #context['is_member'] = True
-        #users_groups = get_action('group_list_authz')(context, data_dict)
-
-        #pkg_group_ids = set(group['id'] for group
-                            #in c.pkg_dict.get('groups', []))
-        #user_group_ids = set(group['id'] for group
-                             #in users_groups)
-
-        #c.group_dropdown = [[group['id'], group['display_name']]
-                            #for group in users_groups if
-                            #group['id'] not in pkg_group_ids]
-
-        #for group in c.pkg_dict.get('groups', []):
-            #group['user_member'] = (group['id'] in user_group_ids)
 
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
