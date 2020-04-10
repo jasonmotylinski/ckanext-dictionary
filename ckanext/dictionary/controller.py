@@ -196,7 +196,7 @@ class DDController(BaseController):
         datatitle =request.params.get(varNames[3])
         dataformat = request.params.get(varNames[4])
         dataid = request.params.get(varNames[5])
-        return {'resource_id':resource_id, 'records':[{'package_id' : id, 'field_name':datafield, 'description':datadesc, "title":datatitle, "format": dataformat,"id":dataid}], 'method': 'update','force':True}
+        return {'resource_id':resource_id, 'records':[{'package_id' : package_id, 'field_name':datafield, 'description':datadesc, "title":datatitle, "format": dataformat,"id":dataid}], 'method': 'update','force':True}
 
 
     def new_resource_ext(self, id, data=None, errors=None, error_summary=None):
