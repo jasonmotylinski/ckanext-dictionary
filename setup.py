@@ -15,17 +15,17 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.0.1',
+    version='0.0.2',
 
     description='''A data dictionary (metadata) plugin for CKAN''',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/cmuphillycapstone/ckanext-dictionary.git',
+    url='https://github.com/jasonmotylinski/ckanext-dictionary.git',
 
     # Author details
-    author='''CMU MISM capstone 2015''',
-    author_email='''cmu.edu''',
+    author='''Jason Motylinski''',
+    author_email='''jason@motylinski.com''',
 
     # Choose your license
     license='AGPL',
