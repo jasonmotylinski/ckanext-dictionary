@@ -43,7 +43,7 @@ class ApiController(BaseController):
 
     def dictionary_update(self):
         response.headers['Content-Type']="application/json"
-        return {"json":"yes"}
+        return json.dumps({"json":"yes"})
 
 class DDController(BaseController):
 
