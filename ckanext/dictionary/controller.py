@@ -1,17 +1,20 @@
+"""Summary: Controllers for Dictionary Plugin for CKAN.
+
+Description: Contains BaseDDController contains
+shared logic between the multiple controllers. ApiController handles API logic.
+DDController contains the UI logic.
+"""
 import logging
-from ckan.lib.base import BaseController
 import ckan.lib.helpers as h
-from ckan.common import _, json, request, c, g, response
-import cgi
-
-
 import ckan.logic as logic
 import ckan.lib.base as base
-import ckan.lib.navl.dictization_functions as dict_fns
-
 import ckan.model as model
 import ckan.lib.plugins
 import ckan.lib.render
+
+from ckan.common import _, json, request, c, response
+from ckan.lib.base import BaseController
+
 
 log = logging.getLogger(__name__)
 
@@ -32,23 +35,17 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
 
 class BaseDDController(BaseController):
-    """
-    Base controller class to manage the UI and API
-    """
+    """Base controller class to manage the UI and API."""
 
     def get_context(self):
-        """
-        Get the context object used by CKAN actions
-        """
+        """Get the context object used by CKAN actions."""
         return {'model': model,
                 'session': model.Session,
                 'user': c.user or c.author,
                 'auth_user_obj': c.userobj}
 
     def get_data_dict_resource_id(self):
-        """
-        Get the Datastore resource ID for the data_dict tables
-        """
+        """Get the Datastore resource ID for the data_dict tables."""
         context = self.get_context()
         tables = get_action('datastore_search')(context, {'resource_id': '_table_metadata'})
         for t in tables['records']:
@@ -59,19 +56,15 @@ class BaseDDController(BaseController):
         return None
 
     def get_data_dictionary_records(self, package_id, resource_id):
-        """
-        Get the data dictionary records from the database
-        """
+        """Get the data dictionary records from the database."""
         context = self.get_context()
         data_dict_dict = {'resource_id': resource_id, 'filters': {'package_id': package_id}, 'sort': ['id']}
 
         log.info("get_data_dictionary_records: Getting records for resource_id: {0} and package_id: {1}".format(resource_id, package_id))
         return get_action('datastore_search')(context, data_dict_dict)['records']
-    
+
     def update_data_dictionary(self, data):
-        """
-        Update the data dictionary records in datastore and the CKAN dataset database
-        """
+        """Update the data dictionary records in datastore and the CKAN dataset database."""
         context = self.get_context()
         resource_id = self.get_data_dict_resource_id()
         data['resource_id'] = resource_id
@@ -90,17 +83,17 @@ class BaseDDController(BaseController):
             log.info("update_data_dictionary: Create records for resource_id: {0} data: {1}".format(resource_id, data))
             get_action('datastore_create')(context, data)
 
-   
+
 class ApiController(BaseDDController):
-    """Controller for API actions"""
+    """Controller for API actions."""
 
     def dictionary_update(self):
-        """Update the dictionary for a given package"""
+        """Update the dictionary for a given package."""
         if request.method == 'POST':
             body = json.load(request.data)
             self.update_data_dictionary(body)
             response.headers['Content-Type'] = "application/json"
-            return json.dumps({"json": "yes"})
+            return json.dumps({"status": "ok"})
         else:
             response.status_int = 501
             response.headers['Content-Type'] = "application/json"
@@ -108,10 +101,10 @@ class ApiController(BaseDDController):
 
 
 class DDController(BaseDDController):
+    """Controller used for UI logic."""
 
     def _resource_form(self, package_type):
-        # backwards compatibility with plugins not inheriting from
-        # DefaultDatasetPlugin and not implmenting resource_form
+        """Backwards compatibility with plugins not inheriting from DefaultDatasetPlugin and not implmenting resource_form."""
         plugin = lookup_package_plugin(package_type)
         if hasattr(plugin, 'resource_form'):
             result = plugin.resource_form()
@@ -119,11 +112,8 @@ class DDController(BaseDDController):
                 return result
         return lookup_package_plugin().resource_form()
 
-    def finaldict(self, id, data=None, errors=None):
-        c.link = "/dataset/dictionary/new_dict/{0}".format(str(id))
-        return render("package/new_data_dict.html", extra_vars={'package_id': str(id)})
-
     def edit_dictionary(self, id, data=None, errors=None):
+        """Edit dictionary."""
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
                    'auth_user_obj': c.userobj, 'use_cache': False}
@@ -167,10 +157,8 @@ class DDController(BaseDDController):
             abort(401, _('Unauthorized to read dataset %s') % id)
         return render("package/edit_data_dict.html", extra_vars={'package_id': id})
 
-    def redirectSecond(self, id, data=None, errors=None):
-        return render("package/new_resource.html")
-
     def update_schema_field(self, context, package_id, schema):
+        """Update the value of the _schema field the given package."""
         package = get_action('package_show')(context, {"id": package_id})
       
         key_found = False
@@ -186,6 +174,7 @@ class DDController(BaseDDController):
         get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
 
     def get_row_count_from_params(self):
+        """Determine how many form rows are being passed in via HTTP parameters."""
         idx = 0
         while True:
             id = request.params.get("field_{0}".format(idx))
@@ -197,6 +186,7 @@ class DDController(BaseDDController):
         return idx
 
     def get_record_from_params(self, package_id, resource_id, row_id):
+        """Build a record object from request parameters."""
         varNames = ['field_' + str(row_id), 'type_' + str(row_id), 'description_' + str(row_id), 'title_' + str(row_id), 'format_' + str(row_id)]
         datafield = request.params.get(varNames[0])
         datadesc = request.params.get(varNames[2])
@@ -205,8 +195,9 @@ class DDController(BaseDDController):
         return {'package_id': package_id, 'field_name': datafield, 'description': datadesc, "title": datatitle, "format": dataformat, "id": str(row_id)}
 
     def new_data_dictionary(self, id):
+        """Update the data dictionary for a given package from the web for."""
         package_id = id  # I'm not usually a fan of reassigning variables for no reason, but there are a lot of IDs floating around in this function so reassigning for clarity
-        
+
         log.info("new_data_dictionary: Package ID: {0}".format(package_id))
 
         if request.method == 'POST':
@@ -245,140 +236,8 @@ class DDController(BaseDDController):
 
             h.redirect_to(controller='package', action='read', id=id)
 
-    def new_resource_ext(self, id, data=None, errors=None, error_summary=None):
-        ''' FIXME: This is a temporary action to allow styling of the
-        forms. '''
-        c.linkResource = str("/dataset/new_resource/" + id)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IN NEW_RESOURCE_EXT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        if request.method == 'POST' and not data:
-            save_action = request.params.get('save')
-
-            data = data or \
-                clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
-                                                           request.POST))))
-            # we don't want to include save as it is part of the form
-            del data['save']
-            resource_id = data['id']
-
-            del data['id']
-
-            context = {'model': model, 'session': model.Session,
-                       'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
-            # see if we have any data that we are trying to save
-
-            data_provided = False
-            for key, value in data.iteritems():
-                if ((value or isinstance(value, cgi.FieldStorage))
-                        and key != 'resource_type'):
-                    data_provided = True
-                    break
-            if not data_provided and save_action != "go-dataset-complete":
-                if save_action == 'go-dataset':
-                    # go to final stage of adddataset
-                    h.redirect_to(controller='package',
-                                  action='edit', 
-                                  id=id)
-                # see if we have added any resources
-                try:
-                    data_dict = get_action('package_show')(context, {'id': id})
-                except NotAuthorized:
-                    abort(401, _('Unauthorized to update dataset'))
-                except NotFound:
-                    abort(404, _('The dataset {id} could not be found.'
-                                 ).format(id=id))
-                if not len(data_dict['resources']):
-                    # no data so keep on page
-                    msg = _('You must add at least one data resource')
-                    # On new templates do not use flash message
-                    if g.legacy_templates:
-                        h.flash_error(msg)
-                        h.redirect_to(controller='package',
-                                           action='new_resource', id=id)
-                    else:
-                        errors = {}
-                        error_summary = {_('Error'): msg}
-                        return self.new_resource_ext(id, data, errors,
-                                                 error_summary)
-                # XXX race condition if another user edits/deletes
-                data_dict = get_action('package_show')(context, {'id': id})
-                get_action('package_update')(
-                    dict(context, allow_state_change=True),
-                    dict(data_dict, state='active'))
-                h.redirect_to(controller='package',
-                                   action='read', id=id)
-
-            data['package_id'] = id
-            try:
-                if resource_id:
-                    data['id'] = resource_id
-                    get_action('resource_update')(context, data)
-                else:
-                    get_action('resource_create')(context, data)
-            except ValidationError, e:
-                errors = e.error_dict
-                error_summary = e.error_summary
-                return self.new_resource(id, data, errors, error_summary)
-            except NotAuthorized:
-                abort(401, _('Unauthorized to create a resource'))
-            except NotFound:
-                abort(404, _('The dataset {id} could not be found.'
-                             ).format(id=id))
-            if save_action == 'go-metadata':
-                # XXX race condition if another user edits/deletes
-                data_dict = get_action('package_show')(context, {'id': id})
-                get_action('package_update')(
-                    dict(context, allow_state_change=True),
-                    dict(data_dict, state='active'))
-                h.redirect_to(controller='package',
-                                   action='read', id=id)
-            elif save_action == 'go-datadict':
-                print('save action was go-datadict in the exntenstion NEEWWWW!!!!!!!!!!!')
-                h.redirect_to(str("/dataset/dictionary/add/"+id))
-            elif save_action == 'go-dataset':
-                # go to first stage of add dataset
-                h.redirect_to(controller='package',
-                                   action='edit', id=id)
-            elif save_action == 'go-dataset-complete':
-                # go to first stage of add dataset
-                h.redirect_to(controller='package',
-                                   action='read', id=id)
-            else:
-                # add more resources
-                h.redirect_to(controller='package',
-                                   action='new_resource', id=id)
-
-        # get resources for sidebar
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
-        try:
-            pkg_dict = get_action('package_show')(context, {'id': id})
-        except NotFound:
-            abort(404, _('The dataset {id} could not be found.').format(id=id))
-        try:
-            check_access(
-                'resource_create', context, {"package_id": pkg_dict["id"]})
-        except NotAuthorized:
-            abort(401, _('Unauthorized to create a resource for this package'))
-
-        package_type = pkg_dict['type'] or 'dataset'
-
-        errors = errors or {}
-        error_summary = error_summary or {}
-        vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'action': 'new',
-                'resource_form_snippet': self._resource_form(package_type),
-                'dataset_type': package_type}
-        vars['pkg_name'] = id
-        # required for nav menu
-        vars['pkg_dict'] = pkg_dict
-        template = 'package/new_resource_not_draft.html'
-        if pkg_dict['state'].startswith('draft'):
-            vars['stage'] = ['complete', 'active']
-            template = 'package/new_resource.html'
-        return render(template, extra_vars=vars)
-    
     def dictionary(self, id):
+        """Render logic for displaying the dictionary for a given package."""
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
                    'auth_user_obj': c.userobj, 'use_cache': False}
@@ -426,4 +285,4 @@ class DDController(BaseDDController):
             abort(404, _('Dataset not found'))
         except NotAuthorized:
             abort(401, _('Unauthorized to read dataset %s') % id)
-        return render('package/dictionary_display.html',{'dataset_type': dataset_type})
+        return render('package/dictionary_display.html', {'dataset_type': dataset_type})
