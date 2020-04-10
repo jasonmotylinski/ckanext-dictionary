@@ -102,7 +102,9 @@ class DDController(BaseController):
     def redirectSecond(self, id, data=None, errors=None):
         return render("package/new_resource.html")
 
-    def new_data_dictionary(self, package_id):
+    def new_data_dictionary(self, id):
+        package_id=id #I'm not usually a fan of reassigning variables for no reason, but there are a lot of IDs floating around in this function so reassigning for clarity
+        
         log.info("new_data_dictionary: Package ID: {0}".format(package_id))
 
         if request.method == 'POST':
