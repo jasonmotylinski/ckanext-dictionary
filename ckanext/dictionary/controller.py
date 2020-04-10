@@ -41,7 +41,7 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
 class ApiController(BaseController):
 
-    def dictionary_update(self, data):
+    def dictionary_update(self):
         return {"json":"yes"}
 
 class DDController(BaseController):
@@ -121,6 +121,12 @@ class DDController(BaseController):
 
         get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
 
+    def get_context(self):
+        return {'model': model, 
+                'session': model.Session,
+                'user': c.user or c.author, 
+                'auth_user_obj': c.userobj}
+
 
     def new_data_dictionary(self, id):
         package_id=id #I'm not usually a fan of reassigning variables for no reason, but there are a lot of IDs floating around in this function so reassigning for clarity
@@ -130,9 +136,7 @@ class DDController(BaseController):
         if request.method == 'POST':
             save_action = request.params.get('save')
 
-            context = {'model': model, 'session': model.Session,
-                       'user': c.user or c.author, 'auth_user_obj': c.userobj}
-            counter = 0
+            context = self.get_context()
 
             resource_ids = None
             try:
