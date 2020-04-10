@@ -151,6 +151,7 @@ class DDController(BaseController):
             if rowCount > 0:
                 for i in range(1,rowCount+1):
                     data=self.get_params_data(resource_ids, i)
+                    log.info("new_data_dictionary: Upsert record resource_id: {0} data: {1}".format(resource_ids, data))
                     get_action('datastore_upsert')(context,  data)
 
         except NotFound:
