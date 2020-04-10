@@ -161,8 +161,6 @@ class DDController(BaseController):
         except NotAuthorized:
             abort(401, _('Unauthorized to read dataset %s') % id)
 
-        
-        #data = request.params
         if save_action == 'go-add-dict':
             context = {'model': model, 
                         'session': model.Session,
@@ -182,11 +180,12 @@ class DDController(BaseController):
     def get_row_count_from_params(self):
         idx=0
         while True:
-            id=request.params.get("id_{0}".format(idx))
+            id=request.params.get("field_{0}".format(idx))
             if id == None or id == '':
                 break
             else:
                 idx=idx+1
+        log.info("get_row_count_from_params: Row count: {0}".format(idx))
         return idx
 
     def get_params_data(self, package_id, resource_id, row_id):
