@@ -102,8 +102,8 @@ class DDController(BaseController):
     def redirectSecond(self, id, data=None, errors=None):
         return render("package/new_resource.html")
 
-    def new_data_dictionary(self, id):
-        log.info("new_data_dictionary")
+    def new_data_dictionary(self, package_id):
+        log.info("new_data_dictionary: Package ID: {0}".format(package_id))
 
         if request.method == 'POST':
             save_action = request.params.get('save')
@@ -138,7 +138,7 @@ class DDController(BaseController):
         records=[]
  
         try:
-            log.info("new_data_dictionary: Getting records for resource_id: {0} and package_id: {1}".format(resource_ids, id))
+            log.info("new_data_dictionary: Getting records for resource_id: {0} and package_id: {1}".format(resource_ids, package_id))
             records=get_action('datastore_search')(context, data_dict_dict)['records']
 
             for r in records:
@@ -150,7 +150,7 @@ class DDController(BaseController):
 
             if rowCount > 0:
                 for i in range(1,rowCount+1):
-                    data=self.get_params_data(resource_ids, i)
+                    data=self.get_params_data(package_id, resource_ids, i)
                     log.info("new_data_dictionary: Upsert record resource_id: {0} data: {1}".format(resource_ids, data))
                     get_action('datastore_upsert')(context,  data)
 
@@ -187,7 +187,7 @@ class DDController(BaseController):
                 idx=idx+1
         return idx
 
-    def get_params_data(self, resource_id, row_id):
+    def get_params_data(self, package_id, resource_id, row_id):
         varNames = ['field_'+str(row_id), 'type_'+str(row_id), 'description_'+str(row_id), 'title_'+str(row_id), 'format_'+str(row_id), 'id_'+str(row_id)]
         tempdata = request.params.get(varNames[0])
         datafield = request.params.get(varNames[0])
