@@ -89,15 +89,20 @@ class ApiController(BaseDDController):
 
     def dictionary_update(self):
         """Update the dictionary for a given package."""
-        if request.method == 'POST':
-            body = json.load(request.data)
-            self.update_data_dictionary(body)
-            response.headers['Content-Type'] = "application/json"
-            return json.dumps({"status": "ok"})
-        else:
-            response.status_int = 501
-            response.headers['Content-Type'] = "application/json"
-            return json.dumps({"error": "Not Implemented"})
+        try:
+            if request.method == 'POST':
+                body = json.load(request.data)
+                self.update_data_dictionary(body)
+                response.headers['Content-Type'] = "application/json"
+                return json.dumps({"status": "ok"})
+            else:
+                response.status_int = 501
+                response.headers['Content-Type'] = "application/json"
+                return json.dumps({"error": "Not Implemented"})
+        except Exception as e:
+                response.status_int = 503
+                response.headers['Content-Type'] = "application/json"
+                return json.dumps({"error": e})
 
 
 class DDController(BaseDDController):
