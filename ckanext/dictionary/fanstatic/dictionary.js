@@ -26,7 +26,7 @@ ckan.module('dictionary_remove_field', function ($) {
       initialize: function () {
         $(function(){
             $('.btn-remove').click(function(el){
-                $(el).closest('.control-group').remove();
+                $(el.currentTarget).closest('.control-group').remove();
                 reindex();
             });
         });
