@@ -189,15 +189,14 @@ class DDController(BaseController):
         return idx
 
     def get_params_data(self, package_id, resource_id, row_id):
-        varNames = ['field_'+str(row_id), 'type_'+str(row_id), 'description_'+str(row_id), 'title_'+str(row_id), 'format_'+str(row_id), 'id_'+str(row_id)]
+        varNames = ['field_'+str(row_id), 'type_'+str(row_id), 'description_'+str(row_id), 'title_'+str(row_id), 'format_'+str(row_id)]
         tempdata = request.params.get(varNames[0])
         datafield = request.params.get(varNames[0])
         datatype = request.params.get(varNames[1])
         datadesc = request.params.get(varNames[2])
         datatitle =request.params.get(varNames[3])
         dataformat = request.params.get(varNames[4])
-        dataid = request.params.get(varNames[5])
-        return {'resource_id':resource_id, 'records':[{'package_id' : package_id, 'field_name':datafield, 'description':datadesc, "title":datatitle, "format": dataformat,"id":dataid}], 'method': 'update','force':True}
+        return {'resource_id':resource_id, 'records':[{'package_id' : package_id, 'field_name':datafield, 'description':datadesc, "title":datatitle, "format": dataformat,"id":row_id}], 'method': 'update','force':True}
 
 
     def new_resource_ext(self, id, data=None, errors=None, error_summary=None):
