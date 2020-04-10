@@ -102,7 +102,8 @@ class ApiController(BaseDDController):
         except Exception as e:
                 response.status_int = 500
                 response.headers['Content-Type'] = "application/json"
-                return json.dumps({"error": e.message})
+                log.error("dictionary_update", e)
+                return json.dumps({"status": "error"})
 
 
 class DDController(BaseDDController):
