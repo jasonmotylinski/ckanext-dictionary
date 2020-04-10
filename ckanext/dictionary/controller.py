@@ -111,16 +111,15 @@ class DDController(BaseController):
             context = {'model': model, 'session': model.Session,
                        'user': c.user or c.author, 'auth_user_obj': c.userobj}
             counter = 0
-            tempdata= ''
-            ###########################
+
             resource_ids = None
             try:
                 meta_dict = {'resource_id': '_table_metadata'}
                 tables = get_action('datastore_search')(context,meta_dict)
                 for t in tables['records']:
-                    print(t['name'])
                     if t['name'] == "data_dict":
                         resource_ids = t['alias_of']
+                        log.info("new_data_dictionary: Found existing data_dictin DataStore. alias_of: {0}".format(resource_ids))
             except:
                 resource_ids = None
 
@@ -131,7 +130,6 @@ class DDController(BaseController):
             meta_dict = {'resource_id': '_table_metadata'}
             tables = get_action('datastore_search')(context,meta_dict)
             for t in tables['records']:
-                print(t['name'])
                 if t['name'] == "data_dict":
                     resource_ids = t['alias_of']
 
@@ -140,10 +138,12 @@ class DDController(BaseController):
         records=[]
  
         try:
+            log.info("new_data_dictionary: Getting records for resource_id: {0} and package_id: {1}".format(resource_ids, id))
             records=get_action('datastore_search')(context, data_dict_dict)['records']
 
             for r in records:
                 req={'resource_id':resource_ids,'filters': {'id':r['id']}}
+                log.info("new_data_dictionary: Deleting record resource_id: {0} id: {1}".format(resource_ids, r['id']))
                 get_action('datastore_delete')(context, req)
 
             rowCount=self.get_row_count_from_params()
