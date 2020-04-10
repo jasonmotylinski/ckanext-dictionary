@@ -3,29 +3,27 @@
 
 {% block primary_content_inner %}
   {% if c.pkg_data_dictionary %}
-        <table style="width:100%">
-        <tr>
+    <table style="width:100%">
+      <tr>
         <td><b>Field Name</b></td>
-        <td> <b>Title</b></td>
         <td> <b>Format</b></td>
         <td><b>Description</b></td>
-	</tr>
-  {% if c.pkg_data_dictionary %}
-        {% for dictVal in c.pkg_data_dictionary %}
-	{% if dictVal['package_id'] != ''%}
-	<tr>
-	<td> {{dictVal['field_name']}} </td>
-	<td> {{dictVal['title']}} </td>
-        <td> {{dictVal['format']}}  </td>
-	<td> {{dictVal['description']}}  </td>
-	</td>
-	{% endif %}
-        {% endfor %}
-  {% endif %}
-	</table>
+	  </tr>
 
+    {% if c.pkg_data_dictionary %}
+      {% for dictVal in c.pkg_data_dictionary %}
+        {% if dictVal['package_id'] != ''%}
+	        <tr>
+	          <td> {{dictVal['field_name']}} </td>
+            <td> {{dictVal['format']}}  </td>
+	          <td> {{dictVal['description']}}  </td>
+	        </tr>
+	      {% endif %}
+      {% endfor %}
+    {% endif %}
 
+	  </table>
   {% else %}
-        <p class="empty">{{ _('There is no data dictionary available for this dataset') }}</p>
+    <p class="empty">{{ _('There is no data dictionary available for this dataset') }}</p>
   {% endif %}
 {% endblock %}

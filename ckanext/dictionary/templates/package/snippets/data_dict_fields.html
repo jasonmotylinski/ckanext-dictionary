@@ -19,7 +19,7 @@
         <div class="row" style="text-align:center;font-weight:bold;">
           <div class="col-md-3">Field Name</div>
           <div class="col-md-3">Format</div>
-          <div class="col-md-3">Description</div>
+          <div class="col-md-5">Description</div>
         </div>
 
         {%if c.pkg_data_dictionary%}
@@ -70,13 +70,14 @@
                   </optgroup>
                 </select>
               </div>
-              <div class="col-md-3"><input id="description-{{ index }}" class="description" type="text" name="description_{{ index }}" value="{{current_data_dict['description']}}" style="width:90%" /></div>
+              <div class="col-md-5"><input id="description-{{ index }}" class="description" type="text" name="description_{{ index }}" value="{{current_data_dict['description']}}" style="width:90%" /></div>
+              <div class="col-md-1"> <a class="btn btn-danger" id="btn-remove" data-module="dictionary_remove_field"><i class="fa fa-minus"></i></a></div>
               <div class=""><input id="id-{{ index }}" class="id" type="hidden" name="id_{{ index }}" value="{{current_data_dict['id']}}" /></div>
             </div>
           </div>
         {% endfor %}
         <div class="row">
-          <div class="col-md-12" align="right" style="right: 18px">
+          <div class="col-md-11" align="right" style="right: 18px">
             <a class="btn btn-default" id="btn-add" data-module="dictionary_add_field"><i class="fa fa-plus"></i></a>
           </div>
         </div>
