@@ -39,7 +39,7 @@
             {% set current_data_dict = {'field_name' :'', 'title':'','description' :'', 'sensitive': '','id':''} %}
           {%endif%}
 
-          <div class="control-group control-custom" style="margin:1px;">
+          <div class="control-group" style="margin:1px;">
             <div class="row">
               <div class="col-md-3"><input id="field-{{ index }}" type="text" name="field_{{ index }}" value="{{current_data_dict['field_name']}}" style="width:90%" /></div>
               <div class="col-md-3"><input id="title-{{ index }}" type="text" name="title_{{ index }}" value="{{current_data_dict['title']}}" style="width:90%" /></div>
