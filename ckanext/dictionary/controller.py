@@ -199,7 +199,7 @@ class DDController(BaseController):
         datadesc = request.params.get(varNames[2])
         datatitle =request.params.get(varNames[3])
         dataformat = request.params.get(varNames[4])
-        return {'package_id' : package_id, 'field_name':datafield, 'description':datadesc, "title":datatitle, "format": dataformat,"id":row_id}
+        return {'package_id' : package_id, 'field_name':datafield, 'description':datadesc, "title":datatitle, "format": dataformat,"id":str(row_id)}
 
 
     def new_resource_ext(self, id, data=None, errors=None, error_summary=None):
