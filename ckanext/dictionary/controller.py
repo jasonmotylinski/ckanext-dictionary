@@ -343,9 +343,8 @@ class DDController(BaseController):
                    'auth_user_obj': c.userobj, 'use_cache': False}
         data_dict = {'id': id}
         try:
-	    print("here!!!!!!!!1")
-	    #tem = get_action('package_show')(context, data_dict)
-	    #print(tem)
+            log.info("dictionary: trying to get the data_dict")
+
             c.pkg_dict = get_action('package_show')(context, data_dict)
             dataset_type = c.pkg_dict['type'] or 'dataset'
         except NotFound:
@@ -369,8 +368,9 @@ class DDController(BaseController):
 	    resource_ids = None
         if resource_ids == None:
             create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id','type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}]}
+            log.info("dictionary: creating the data_dict table in the datastore")
             get_action('datastore_create')(context,create)
-	    print("CREATE TABLE !!!!!!!!!!!!!!!!!!!!!!!")
+            
             meta_dict = {'resource_id': '_table_metadata'}
             tables = get_action('datastore_search')(context,meta_dict)
             for t in tables['records']:
@@ -378,6 +378,7 @@ class DDController(BaseController):
                 if t['name'] == "data_dict":
                     resource_ids = t['alias_of']
         data_dict_dict = {'resource_id': resource_ids,'filters': {'package_id':id},'sort':['id']}
+
         try:
             pkg_data_dictionary = get_action('datastore_search')(context, data_dict_dict)
             print(pkg_data_dictionary['records'])

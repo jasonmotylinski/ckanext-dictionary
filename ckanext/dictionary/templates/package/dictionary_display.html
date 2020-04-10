@@ -3,12 +3,14 @@
 
 {% block primary_content_inner %}
   {% if c.pkg_data_dictionary %}
-    <table style="width:100%">
-      <tr>
-        <td><b>Field Name</b></td>
-        <td> <b>Format</b></td>
-        <td><b>Description</b></td>
-	  </tr>
+    <table style="width:100%" class="table table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <td><b>Field Name</b></td>
+          <td> <b>Format</b></td>
+          <td><b>Description</b></td>
+        </tr>
+      </thead>
 
     {% if c.pkg_data_dictionary %}
       {% for dictVal in c.pkg_data_dictionary %}
