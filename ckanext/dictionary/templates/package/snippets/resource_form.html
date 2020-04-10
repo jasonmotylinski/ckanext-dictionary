@@ -3,7 +3,7 @@
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 {% set action = form_action or h.url_for(c.linkResource) %}
-TEST
+
 <form id="resource-edit" class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
   {% block stages %}
     {# An empty stages variable will not show the stages #}

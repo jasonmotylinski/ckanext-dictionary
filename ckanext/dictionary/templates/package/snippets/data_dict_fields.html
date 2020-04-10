@@ -25,7 +25,6 @@
 
         {%if c.pkg_data_dictionary%}
           {% set data_dict = c.pkg_data_dictionary %}
-          {% set data_dict = data_dict + [[]]%}
         {%else%}
           {%set data_dict = [[],[],[]]%}
         {%endif%} 
@@ -54,14 +53,14 @@
                     <option value="UUID" {% if current_data_dict['format'] == "UUID" %} selected {% endif %}>UUID</option>
                   </optgroup>
                   <optgroup label="Number">
-                                <option value="Default Number" {% if current_data_dict['format'] == "Default Number" %} selected {% endif %}>Default Number</option>
-                                <option value="Integer" {% if current_data_dict['format'] == "Integer" %} selected {% endif %}>Integer</option>
-                                <option value="Currency" {% if current_data_dict['format'] == "Currency" %} selected {% endif %}>Currency</option>
+                    <option value="Default Number" {% if current_data_dict['format'] == "Default Number" %} selected {% endif %}>Default Number</option>
+                    <option value="Integer" {% if current_data_dict['format'] == "Integer" %} selected {% endif %}>Integer</option>
+                    <option value="Currency" {% if current_data_dict['format'] == "Currency" %} selected {% endif %}>Currency</option>
                   </optgroup>
                   <optgroup label="Date/Time">
-                                <option value="ISO8601 Date" {% if current_data_dict['format'] == "ISO8601 Date" %} selected {% endif %}>ISO8601 Date</option>
+                    <option value="ISO8601 Date" {% if current_data_dict['format'] == "ISO8601 Date" %} selected {% endif %}>ISO8601 Date</option>
                     <option value="Other Date" {% if current_data_dict['format'] == "Other Date" %} selected {% endif %}>Other Date</option>
-                                <option value="Duration" {% if current_data_dict['format'] == "Duration" %} selected {% endif %}>Duration</option>
+                    <option value="Duration" {% if current_data_dict['format'] == "Duration" %} selected {% endif %}>Duration</option>
                   </optgroup>
                   <optgroup label="Other">
                     <option value="Boolean" {% if current_data_dict['format'] == "Boolean" %} selected {% endif %}>Boolean</option>
@@ -69,7 +68,7 @@
                     <option value="GeoJSON" {% if current_data_dict['format'] == "GeoJSON" %} selected {% endif %}>GeoJSON</option>
                     <option value="TopoJSON" {% if current_data_dict['format'] == "TopoJSON" %} selected {% endif %}>TopoJSON</option>
                     <option value="JSON Object" {% if current_data_dict['format'] == "JSON Object" %} selected {% endif %}>JSON Object</option>
-                                <option value="JSON Array" {% if current_data_dict['format'] == "JSON Array" %} selected {% endif %}>JSON Array</option>
+                    <option value="JSON Array" {% if current_data_dict['format'] == "JSON Array" %} selected {% endif %}>JSON Array</option>
                   </optgroup>
                 </select>
               </div>
