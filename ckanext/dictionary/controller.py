@@ -147,7 +147,7 @@ class DDController(BaseController):
                 req={'resource_id':resource_ids,'filters': {'id':r['id']}}
                 log.info("new_data_dictionary: Deleting record resource_id: {0} id: {1}".format(resource_ids, r['id']))
                 get_action('datastore_delete')(context, req)
-                get_action('package_patch', context, {"id": package_id, "extras": [{"key":"_schema", "value":""}]})
+                get_action('package_patch')(context, {"id": package_id, "extras": [{"key":"_schema", "value":""}]})
 
             rowCount=self.get_row_count_from_params()
 
