@@ -238,7 +238,7 @@ class DDController(BaseDDController):
                     for i in range(0, rowCount):
                         data['records'].append(self.get_record_from_params(data['package_id'], resource_ids, i))
 
-                    self.update_data_dictionary(package_id)
+                    self.update_data_dictionary(data)
             except NotFound:
                 abort(404, _('Dataset not found'))
             except NotAuthorized:
