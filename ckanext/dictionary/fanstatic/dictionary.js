@@ -24,11 +24,9 @@ ckan.module('dictionary_add_field', function ($) {
 ckan.module('dictionary_remove_field', function ($) {
     return {
       initialize: function () {
-        $(function(){
-            $('.btn-remove').click(function(el){
-                $(el.currentTarget).closest('.control-group').remove();
-                reindex();
-            });
+        $(this.el).click(function(el){
+            $(el.currentTarget).closest('.control-group').remove();
+            reindex();
         });
       }
     };

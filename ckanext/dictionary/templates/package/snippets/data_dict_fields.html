@@ -37,7 +37,7 @@
             {% set current_data_dict = {'field_name' :'', 'title':'','description' :'', 'sensitive': '','id':''} %}
           {%endif%}
 
-          <div class="control-group" style="margin:1px;" data-module="dictionary_remove_field">
+          <div class="control-group" style="margin:1px;">
             <div class="row">
               <div class="col-md-3"><input id="field-{{ index }}" class="field" type="text" name="field_{{ index }}" value="{{current_data_dict['field_name']}}" style="width:100%" /></div>
               <div class="col-md-3">
@@ -72,7 +72,7 @@
               </div>
               <div class="col-md-6">
                 <input id="description-{{ index }}" class="description" type="text" name="description_{{ index }}" value="{{current_data_dict['description']}}" style="width:88%" />
-                <a class="btn btn-default btn-small btn-remove"><i class="fa fa-minus"></i></a>
+                <a class="btn btn-default btn-small btn-remove" data-module="dictionary_remove_field"><i class="fa fa-minus"></i></a>
               </div>
               <div class=""><input id="id-{{ index }}" class="id" type="hidden" name="id_{{ index }}" value="{{current_data_dict['id']}}" /></div>
             </div>
