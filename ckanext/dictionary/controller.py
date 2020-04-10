@@ -42,7 +42,7 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 class ApiController(BaseController):
 
     def dictionary_update(self):
-         response.headers['Content-Type'] ="application/json"
+        response.headers['Content-Type']="application/json"
         return {"json":"yes"}
 
 class DDController(BaseController):
