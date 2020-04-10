@@ -76,7 +76,7 @@ class DDController(BaseController):
             resource_ids == None
 
         if resource_ids == None:
-            create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id', 'type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}],'primary_key':['id']}
+            create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id', 'type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}]}
             get_action('datastore_create')(context,create)
             meta_dict = {'resource_id': '_table_metadata'}
             tables = get_action('datastore_search')(context,meta_dict)
@@ -127,7 +127,7 @@ class DDController(BaseController):
 
         if resource_ids == None:
             log.info("new_data_dictionary: data_dict not found in DataStore. Creating")
-            create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id','type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}],'primary_key':['id']}
+            create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id','type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}]}
             get_action('datastore_create')(context,create)
             meta_dict = {'resource_id': '_table_metadata'}
             tables = get_action('datastore_search')(context,meta_dict)
