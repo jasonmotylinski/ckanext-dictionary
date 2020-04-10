@@ -74,6 +74,7 @@ class BaseDDController(BaseController):
         """
         context = self.get_context()
         resource_id = self.get_data_dict_resource_id()
+        data['resource_id'] = resource_id
         log.info("update_data_dictionary: Getting records for resource_id: {0} and package_id: {1}".format(resource_id, data['package_id']))
         records = self.get_data_dictionary_records(data['package_id'], resource_id)
 
@@ -83,8 +84,6 @@ class BaseDDController(BaseController):
             get_action('datastore_delete')(context, req)
 
         if len(data['records']) > 0:
-            data = {'resource_id': resource_id, 'records': []}
-
             log.info("update_data_dictionary: Update dataset schema for package_id : {0} data: {1}".format(data['package_id'], data))
             self.update_schema_field(context, data['package_id'], data["records"])
 
