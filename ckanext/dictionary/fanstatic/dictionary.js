@@ -1,7 +1,11 @@
-<script>
-$(function(){
-  $( "#btn-add" ).click(function() {
-    $('.control-group:last').after($('.control-group:last').clone());
-  });
+ckan.module('dictionary_add_field', function ($) {
+    return {
+      initialize: function () {
+        $(function(){
+            $( "#btn-add" ).click(function() {
+              $('.control-group:last').after($('.control-group:last').clone());
+            });
+          });
+      }
+    };
 });
-</script>
