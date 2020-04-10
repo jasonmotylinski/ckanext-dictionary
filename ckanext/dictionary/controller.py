@@ -151,9 +151,9 @@ class DDController(BaseController):
             rowCount=self.get_row_count_from_params()
 
             if rowCount > 0:
-                for i in range(1,rowCount+1):
+                for i in range(0,rowCount+1):
                     data=self.get_params_data(package_id, resource_ids, i)
-                    log.info("new_data_dictionary: Upsert record resource_id: {0} data: {1}".format(resource_ids, data))
+                    log.info("new_data_dictionary: Upsert record resource_id: {0} form row index: {1} data: {2}".format(resource_ids, i,data))
                     get_action('datastore_upsert')(context,  data)
 
         except NotFound:
@@ -180,7 +180,7 @@ class DDController(BaseController):
         h.redirect_to(controller='package', action='read', id=id)
     
     def get_row_count_from_params(self):
-        idx=1
+        idx=0
         while True:
             id=request.params.get("id_{0}".format(idx))
             if id == None or id == '':
