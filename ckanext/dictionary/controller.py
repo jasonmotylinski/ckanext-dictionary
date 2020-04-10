@@ -368,7 +368,7 @@ class DDController(BaseController):
 	except:
 	    resource_ids = None
         if resource_ids == None:
-            create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id','type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}],'primary_key':['id']}
+            create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id','type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}]}
             get_action('datastore_create')(context,create)
 	    print("CREATE TABLE !!!!!!!!!!!!!!!!!!!!!!!")
             meta_dict = {'resource_id': '_table_metadata'}
