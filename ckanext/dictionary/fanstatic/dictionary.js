@@ -7,6 +7,11 @@ reindex=function(){
     });
 };
 
+remove=function(el){
+    $(el.currentTarget).closest('.control-group').remove();
+    reindex();
+};
+
 ckan.module('dictionary_add_field', function ($) {
     return {
       initialize: function () {
@@ -14,6 +19,7 @@ ckan.module('dictionary_add_field', function ($) {
             $('#btn-add').click(function() {
                 $('.control-group:last').after($('.control-group:last').clone());
                 $('.control-group:last input').val('');
+                $('.control-group:last .btn-remove').click(remove);
                 reindex();
             });
         });
@@ -24,10 +30,7 @@ ckan.module('dictionary_add_field', function ($) {
 ckan.module('dictionary_remove_field', function ($) {
     return {
       initialize: function () {
-        $(this.el).click(function(el){
-            $(el.currentTarget).closest('.control-group').remove();
-            reindex();
-        });
+        $(this.el).click(remove);
       }
     };
 });
