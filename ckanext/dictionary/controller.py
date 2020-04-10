@@ -102,6 +102,22 @@ class DDController(BaseController):
     def redirectSecond(self, id, data=None, errors=None):
         return render("package/new_resource.html")
 
+    def update_schema_field(self, context, package_id, schema):
+        package=get_action('package_show')(context, {"id": package_id})
+        
+        key_found=False
+        for e in package['extras']:
+            if e['key']=='_schema':
+                e['value']=json.dumps({"fields": schema})
+                key_found=True
+                break
+
+        if not key_found:
+            e['extras'].append({'key':'_schema', 'value': json.dumps({"fields": schema})})
+
+        get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
+
+
     def new_data_dictionary(self, id):
         package_id=id #I'm not usually a fan of reassigning variables for no reason, but there are a lot of IDs floating around in this function so reassigning for clarity
         
@@ -147,7 +163,6 @@ class DDController(BaseController):
                 req={'resource_id':resource_ids,'filters': {'id':r['id']}}
                 log.info("new_data_dictionary: Deleting record resource_id: {0} id: {1}".format(resource_ids, r['id']))
                 get_action('datastore_delete')(context, req)
-                get_action('package_patch')(context, {"id": package_id, "extras": [{"key":"_schema", "value":""}]})
 
             rowCount=self.get_row_count_from_params()
 
@@ -159,7 +174,7 @@ class DDController(BaseController):
 
                 log.info("new_data_dictionary: Create records for resource_id: {0} data: {2}".format(resource_ids, i, data))
                 get_action('datastore_create')(context,  data)
-            
+                self.update_schema_field(context, package_id, data["records"])
 
         except NotFound:
             abort(404, _('Dataset not found'))
