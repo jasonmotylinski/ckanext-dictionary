@@ -39,6 +39,10 @@ flatten_to_string_key = logic.flatten_to_string_key
 
 lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
+class ApiController(BaseController):
+
+    def dictionary_update(self, data):
+        return {"json":"yes"}
 
 class DDController(BaseController):
 

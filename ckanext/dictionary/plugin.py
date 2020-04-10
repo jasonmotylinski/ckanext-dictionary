@@ -8,10 +8,6 @@ class Data_DictionaryPlugin(p.SingletonPlugin):
     p.implements(p.IConfigurer)
 
     def before_map(self, map):
-        map.connect(' temp', '/demp/demo',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='index')
-
         map.connect('data_dict_add','/dataset/dictionary/add/{id}',
                     controller='ckanext.dictionary.controller:DDController',
                     action='finaldict')
@@ -33,13 +29,14 @@ class Data_DictionaryPlugin(p.SingletonPlugin):
                     controller='ckanext.dictionary.controller:DDController',
                     action='dictionary', 
                     ckan_icon='info-sign')
+
+        map.connect('api_dictionary_update', '/api/action/dictionary_update',
+                    controller='ckanext.dictionary.controller:ApiController',
+                    action='dictionary_update')
+
         return map
 
     def after_map(self, map):
-        map.connect(' temp', '/demp/demo',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='index')
-
         map.connect('data_dict_add','/dataset/dictionary/add/{id}',
                     controller='ckanext.dictionary.controller:DDController',
                     action='finaldict')
@@ -57,6 +54,11 @@ class Data_DictionaryPlugin(p.SingletonPlugin):
                     controller='ckanext.dictionary.controller:DDController',
                     action='dictionary', 
                     ckan_icon='info-sign')
+
+        map.connect('api_dictionary_update', '/api/action/dictionary_update',
+                    controller='ckanext.dictionary.controller:ApiController',
+                    action='dictionary_update')
+
         return map
 
     def update_config(self, config_):
