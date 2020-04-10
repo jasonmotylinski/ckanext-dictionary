@@ -98,7 +98,9 @@
 </form>
 
 <script>
-$( "#btn-add" ).click(function() {
-  $('.control-group:last').after($('.control-group:last').clone());
+$(function(){
+  $( "#btn-add" ).click(function() {
+    $('.control-group:last').after($('.control-group:last').clone());
+  });
 });
 </script>
