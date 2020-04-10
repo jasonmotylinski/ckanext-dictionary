@@ -121,7 +121,7 @@ class DDController(BaseDDController):
     def finaldict(self, id, data=None, errors=None):
         c.link = "/dataset/dictionary/new_dict/{0}".format(str(id))
         return render("package/new_data_dict.html", extra_vars={'package_id': str(id)})
-    
+
     def edit_dictionary(self, id, data=None, errors=None):
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
@@ -171,7 +171,7 @@ class DDController(BaseDDController):
 
     def update_schema_field(self, context, package_id, schema):
         package = get_action('package_show')(context, {"id": package_id})
-        
+      
         key_found = False
         for e in package['extras']:
             if e['key'] == '_schema':
@@ -183,7 +183,7 @@ class DDController(BaseDDController):
             e['extras'].append({'key': '_schema', 'value': json.dumps({"fields": schema})})
 
         get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
-    
+
     def get_row_count_from_params(self):
         idx = 0
         while True:
@@ -191,7 +191,7 @@ class DDController(BaseDDController):
             if id is None or id == '':
                 break
             else:
-                idx = idx + 1 
+                idx = idx + 1
         log.info("get_row_count_from_params: Row count: {0}".format(idx))
         return idx
 
@@ -210,41 +210,39 @@ class DDController(BaseDDController):
 
         if request.method == 'POST':
             context = self.get_context()
-
-            resource_ids = None
             resource_ids = self.get_data_dict_resource_id()
 
-        if resource_ids is None:
-            log.info("new_data_dictionary: data_dict not found in DataStore. Creating")
-            create = {'resource': {'package_id': id},
-                      'aliases': 'data_dict',
-                      'fields': [{'id': 'package_id', 'type': 'text'},
-                                 {'id': 'id', 'type': 'int4'},
-                                 {'id': 'title', 'type': 'text'},
-                                 {'id': 'field_name', 'type': 'text'},
-                                 {'id': 'format', 'type': 'text'},
-                                 {'id': 'description', 'type': 'text'}]}
-            get_action('datastore_create')(context, create)
-            meta_dict = {'resource_id': '_table_metadata'}
-            tables = get_action('datastore_search')(context, meta_dict)
-            for t in tables['records']:
-                if t['name'] == "data_dict":
-                    resource_ids = t['alias_of']
+            if resource_ids is None:
+                log.info("new_data_dictionary: data_dict not found in DataStore. Creating")
+                create = {'resource': {'package_id': id},
+                          'aliases': 'data_dict',
+                          'fields': [{'id': 'package_id', 'type': 'text'},
+                                     {'id': 'id', 'type': 'int4'},
+                                     {'id': 'title', 'type': 'text'},
+                                     {'id': 'field_name', 'type': 'text'},
+                                     {'id': 'format', 'type': 'text'},
+                                     {'id': 'description', 'type': 'text'}]}
+                get_action('datastore_create')(context, create)
+                meta_dict = {'resource_id': '_table_metadata'}
+                tables = get_action('datastore_search')(context, meta_dict)
+                for t in tables['records']:
+                    if t['name'] == "data_dict":
+                        resource_ids = t['alias_of']
 
-        try:
-            rowCount = self.get_row_count_from_params()
-            data = {}
-            if rowCount > 0:
-                for i in range(0,rowCount):
-                    data['records'].append(self.get_record_from_params(data['package_id'], resource_ids, i))
+            try:
+                rowCount = self.get_row_count_from_params()
+                data = {}
+                if rowCount > 0:
+                    for i in range(0, rowCount):
+                        data['records'].append(self.get_record_from_params(data['package_id'], resource_ids, i))
 
-                self.update_data_dictionary(package_id)
-        except NotFound:
-            abort(404, _('Dataset not found'))
-        except NotAuthorized:
-            abort(401, _('Unauthorized to read dataset %s') % id)
+                    self.update_data_dictionary(package_id)
+            except NotFound:
+                abort(404, _('Dataset not found'))
+            except NotAuthorized:
+                abort(401, _('Unauthorized to read dataset %s') % id)
 
-        h.redirect_to(controller='package', action='read', id=id)
+            h.redirect_to(controller='package', action='read', id=id)
 
     def new_resource_ext(self, id, data=None, errors=None, error_summary=None):
         ''' FIXME: This is a temporary action to allow styling of the
@@ -259,10 +257,7 @@ class DDController(BaseDDController):
                                                            request.POST))))
             # we don't want to include save as it is part of the form
             del data['save']
-            #if 'id' in data.keys()and save_action=="go-dataset-final":
-            #print("Id found","and the path is: ",request.path)
             resource_id = data['id']
-
 
             del data['id']
 
@@ -281,7 +276,8 @@ class DDController(BaseDDController):
                 if save_action == 'go-dataset':
                     # go to final stage of adddataset
                     h.redirect_to(controller='package',
-                                       action='edit', id=id)
+                                  action='edit', 
+                                  id=id)
                 # see if we have added any resources
                 try:
                     data_dict = get_action('package_show')(context, {'id': id})
@@ -414,12 +410,12 @@ class DDController(BaseDDController):
                 get_action('datastore_create')(context, create)
                 
                 meta_dict = {'resource_id': '_table_metadata'}
-                tables = get_action('datastore_search')(context,meta_dict)
+                tables = get_action('datastore_search')(context, meta_dict)
                 for t in tables['records']:
                     print(t['name'])
                     if t['name'] == "data_dict":
                         resource_ids = t['alias_of']
-        data_dict_dict = {'resource_id': resource_ids,'filters': {'package_id':id},'sort':['id']}
+        data_dict_dict = {'resource_id': resource_ids, 'filters': {'package_id':id},'sort':['id']}
 
         try:
             pkg_data_dictionary = get_action('datastore_search')(context, data_dict_dict)
