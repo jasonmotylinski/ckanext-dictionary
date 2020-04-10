@@ -2,60 +2,26 @@ import ckan.plugins as p
 
 
 class Data_DictionaryPlugin(p.SingletonPlugin):
-    '''data dictionary plugin.'''
+    """data dictionary plugin."""
 
-    p.implements(p.IRoutes,inherit=True)
+    p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
 
     def before_map(self, map):
-        map.connect('data_dict_add','/dataset/dictionary/add/{id}',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='finaldict')
 
-        map.connect('dataset_edit_dictionary','/dataset/dictionary/edit/{id}',
-		            controller='ckanext.dictionary.controller:DDController',
-                    action='edit_dictionary', 
+        map.connect('dataset_edit_dictionary', 
+                    '/dataset/dictionary/edit/{id}',
+                    controller='ckanext.dictionary.controller:DDController',
+                    action='edit_dictionary',
                     ckan_icon='edit')
 
-        map.connect('/dataset/new_resource/{id}',
-                    controller='ckanext.dictionary.controller:DDController', 
-                    action='new_resource_ext')
-
-        map.connect('data dict button','/dataset/dictionary/new_dict/{id}',
+        map.connect('data dict button', 
+                    '/dataset/dictionary/new_dict/{id}',
                     controller='ckanext.dictionary.controller:DDController',
                     action="new_data_dictionary")
 
-        map.connect('dataset_dictionary', '/dataset/dictionary/{id}',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='dictionary', 
-                    ckan_icon='info-sign')
-
-        map.connect('api_dictionary_update', '/api/action/dictionary_update',
-                    controller='ckanext.dictionary.controller:ApiController',
-                    action='dictionary_update')
-
-        return map
-
-    def after_map(self, map):
-        map.connect('data_dict_add','/dataset/dictionary/add/{id}',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='finaldict')
-
-        map.connect('dataset_edit_dictionary','/dataset/dictionary/edit/{id}',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='edit_dictionary', 
-                    ckan_icon='edit')
-
-        map.connect('/dataset/new_resource/{id}',
-                    controller='ckanext.dictionary.controller:DDController', 
-                    action='new_resource_ext')
-
-        map.connect('dataset_dictionary', '/dataset/dictionary/{id}',
-                    controller='ckanext.dictionary.controller:DDController',
-                    action='dictionary', 
-                    ckan_icon='info-sign')
-
-        map.connect('api_dictionary_update', '/api/action/dictionary_update',
+        map.connect('api_dictionary_update', 
+                    '/api/action/dictionary_update',
                     controller='ckanext.dictionary.controller:ApiController',
                     action='dictionary_update')
 
