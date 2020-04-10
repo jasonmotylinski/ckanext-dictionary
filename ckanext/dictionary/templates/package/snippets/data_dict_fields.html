@@ -40,10 +40,10 @@
 
           <div class="control-group" style="margin:1px;">
             <div class="row">
-              <div class="col-md-3"><input id="field-{{ index }}" type="text" name="field_{{ index }}" value="{{current_data_dict['field_name']}}" style="width:90%" /></div>
-              <div class="col-md-3"><input id="title-{{ index }}" type="text" name="title_{{ index }}" value="{{current_data_dict['title']}}" style="width:90%" /></div>
+              <div class="col-md-3"><input id="field-{{ index }}" class="field" type="text" name="field_{{ index }}" value="{{current_data_dict['field_name']}}" style="width:90%" /></div>
+              <div class="col-md-3"><input id="title-{{ index }}" class="title" type="text" name="title_{{ index }}" value="{{current_data_dict['title']}}" style="width:90%" /></div>
               <div class="col-md-3">
-                <select class="col-md-12" name="format_{{index}}">
+                <select class="col-md-12" name="format_{{index}}" class="format">
                   <option value=""></option>
                   <optgroup label="String">
                     <option value="Default String" {% if current_data_dict['format'] == "Default String" %} selected {% endif %}>Default String</option>
@@ -72,8 +72,8 @@
                   </optgroup>
                 </select>
               </div>
-              <div class="col-md-3"><input id="description-{{ index }}" type="text" name="description_{{ index }}" value="{{current_data_dict['description']}}" style="width:90%" /></div>
-              <div class=""><input id="id-{{ index }}" type="hidden" name="id_{{ index }}" value="{{current_data_dict['id']}}" /></div>
+              <div class="col-md-3"><input id="description-{{ index }}" class="description" type="text" name="description_{{ index }}" value="{{current_data_dict['description']}}" style="width:90%" /></div>
+              <div class=""><input id="id-{{ index }}" class="id" type="hidden" name="id_{{ index }}" value="{{current_data_dict['id']}}" /></div>
             </div>
           </div>
         {% endfor %}
