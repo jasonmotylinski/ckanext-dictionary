@@ -55,6 +55,8 @@ class BaseDDController(BaseController):
             if t['name'] == "data_dict":
                 resource_id = t['alias_of']
                 log.info("get_data_dict_table: Found existing data_dictionary DataStore. alias_of: {0}".format(resource_id))
+                return resource_id
+        return None
 
     def get_data_dictionary_records(self, package_id, resource_id):
         """
