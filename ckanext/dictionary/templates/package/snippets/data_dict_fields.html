@@ -77,6 +77,11 @@
             </div>
           </div>
         {% endfor %}
+        <div class="row">
+          <div class="col-md-12 float-right">
+            <a class="btn btn-default" id="btn-add"><i class="fa fa-plus"></i></a>
+          </div>
+        </div>
       </div>
     </p>
 
@@ -91,3 +96,9 @@
   {% endblock %}
 {% endblock %}
 </form>
+
+<script>
+$( "#btn-add" ).click(function() {
+  $('.control-group:last').after($('.control-group:last').clone());
+});
+</script>
