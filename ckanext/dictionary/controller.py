@@ -174,6 +174,8 @@ class DDController(BaseController):
 
                 log.info("new_data_dictionary: Create records for resource_id: {0} data: {2}".format(resource_ids, i, data))
                 get_action('datastore_create')(context,  data)
+
+                log.info("new_data_dictionary: Update dataset schema  for package_id : {0} data: {2}".format(package_id, i, data))
                 self.update_schema_field(context, package_id, data["records"])
 
         except NotFound:
