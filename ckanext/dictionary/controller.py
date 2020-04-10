@@ -233,7 +233,7 @@ class DDController(BaseDDController):
 
             try:
                 rowCount = self.get_row_count_from_params()
-                data = {}
+                data = {"records": []}
                 if rowCount > 0:
                     for i in range(0, rowCount):
                         data['records'].append(self.get_record_from_params(data['package_id'], resource_ids, i))
