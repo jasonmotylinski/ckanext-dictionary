@@ -100,7 +100,7 @@ class ApiController(BaseDDController):
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"error": "Not Implemented"})
         except Exception as e:
-                response.status_int = 503
+                response.status_int = 500
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"error": e.message})
 
