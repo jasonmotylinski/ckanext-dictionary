@@ -84,6 +84,9 @@ class BaseDDController(BaseController):
             get_action('datastore_delete')(context, req)
 
         if len(data['records']) > 0:
+            for i in range(0, len(data['records'])):
+                    data['records'][i]['id'] = i
+
             log.info("update_data_dictionary: Update dataset schema for package_id : {0} data: {1}".format(data['package_id'], data))
             self.update_schema_field(context, data['package_id'], data["records"])
 
@@ -112,7 +115,9 @@ class ApiController(BaseDDController):
                 check_access('dictionary_update', context)
                 log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
                 log.info("dictionary_update:request.body:{0}".format(request.body))
+
                 self.update_data_dictionary(context, json.loads(request.body))
+
                 response.status_int = 200
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": True})
