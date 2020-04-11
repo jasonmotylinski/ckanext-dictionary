@@ -92,19 +92,20 @@ class ApiController(BaseDDController):
         try:
             if request.method == 'POST':
                 log.info("dictionary_update:POST")
-                log.info("dictionary_update:request.json_body:{0}".format(request.get_json()))
-                self.update_data_dictionary(request.get_json())
+                log.info("dictionary_update:request.data:{0}".format(request.data))
+                self.update_data_dictionary(request.data)
+                response.status_int = 200
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": True})
             else:
                 response.status_int = 501
                 response.headers['Content-Type'] = "application/json"
-                return json.dumps({{"success": False ,"error": {"messsage": "Not Implemented"}}})
+                return json.dumps({"success": False ,"error": {"messsage": "Not Implemented"}})
         except Exception as e:
                 response.status_int = 500
                 response.headers['Content-Type'] = "application/json"
                 log.error("dictionary_update:Exception: {0}".format(e.message))
-                return json.dumps({{"success": False ,"error": {"messsage": "Exception"}}})
+                return json.dumps({"success": False ,"error": {"messsage": "Exception"}})
 
 
 class DDController(BaseDDController):
