@@ -222,7 +222,7 @@ class DDController(BaseDDController):
         datadesc = request.params.get(varNames[2])
         datatitle = request.params.get(varNames[3])
         dataformat = request.params.get(varNames[4])
-        return {'package_id': package_id, 'field_name': datafield, 'description': datadesc, "title": datatitle, "format": dataformat, "id": str(row_id)}
+        return {'package_id': package_id, 'field_name': datafield, 'description': datadesc, "title": datatitle, "format": dataformat}
 
     def new_data_dictionary(self, id):
         """Update the data dictionary for a given package from the web for."""
