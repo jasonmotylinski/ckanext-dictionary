@@ -91,7 +91,7 @@ class ApiController(BaseDDController):
         """Update the dictionary for a given package."""
         try:
             if request.method == 'POST':
-                log.info("dictionary_update:POST")
+                log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
                 log.info("dictionary_update:request.data:{0}".format(request.data))
                 self.update_data_dictionary(request.data)
                 response.status_int = 200
