@@ -92,8 +92,8 @@ class ApiController(BaseDDController):
         try:
             if request.method == 'POST':
                 log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
-                log.info("dictionary_update:request.json_body:{0}".format(request.json_body))
-                self.update_data_dictionary(request.json_body)
+                log.info("dictionary_update:request.body:{0}".format(request.body))
+                self.update_data_dictionary(json.loads(request.body))
                 response.status_int = 200
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": True})
