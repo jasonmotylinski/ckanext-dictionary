@@ -1,12 +1,15 @@
 import ckan.plugins as p
+import logging 
 
 from ckanext.dictionary.controller import ApiController
+
+log = logging.getLogger(__name__)
 
 class Data_DictionaryPlugin(p.SingletonPlugin):
     '''data dictionary plugin.'''
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.IConfigurer)
-    p.implements(p.IAuthFunctions)
+    p.implements(p.IAuthFunctions, inherit=True)
 
     def before_map(self, map):
 
@@ -39,6 +42,7 @@ class Data_DictionaryPlugin(p.SingletonPlugin):
         p.toolkit.add_resource('fanstatic', 'dictionary')
     
     def get_auth_functions(self):
+        log.info("plugin:get_auth_functions")
         return {
             'dictionary_update': ApiController.dictionary_update
         }
