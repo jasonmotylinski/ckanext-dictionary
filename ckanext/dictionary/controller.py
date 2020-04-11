@@ -38,16 +38,8 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 class BaseDDController(BaseController):
     """Base controller class to manage the UI and API."""
 
-    def get_context(self):
-        """Get the context object used by CKAN actions."""
-        return {'model': model,
-                'session': model.Session,
-                'user': c.user or c.author,
-                'auth_user_obj': c.userobj}
-
-    def get_data_dict_resource_id(self):
+    def get_data_dict_resource_id(self, context):
         """Get the Datastore resource ID for the data_dict tables."""
-        context = self.get_context()
         tables = get_action('datastore_search')(context, {'resource_id': '_table_metadata'})
         for t in tables['records']:
             if t['name'] == "data_dict":
@@ -56,21 +48,35 @@ class BaseDDController(BaseController):
                 return resource_id
         return None
 
-    def get_data_dictionary_records(self, package_id, resource_id):
+    def get_data_dictionary_records(self, context, package_id, resource_id):
         """Get the data dictionary records from the database."""
-        context = self.get_context()
         data_dict_dict = {'resource_id': resource_id, 'filters': {'package_id': package_id}, 'sort': ['id']}
 
         log.info("get_data_dictionary_records: Getting records for resource_id: {0} and package_id: {1}".format(resource_id, package_id))
         return get_action('datastore_search')(context, data_dict_dict)['records']
 
-    def update_data_dictionary(self, data):
+    def update_schema_field(self, context, package_id, schema):
+        """Update the value of the _schema field the given package."""
+        package = get_action('package_show')(context, {"id": package_id})
+      
+        key_found = False
+        for e in package['extras']:
+            if e['key'] == '_schema':
+                e['value'] = json.dumps({"fields": schema})
+                key_found = True
+                break
+
+        if not key_found:
+            e['extras'].append({'key': '_schema', 'value': json.dumps({"fields": schema})})
+
+        get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
+
+    def update_data_dictionary(self, context, data):
         """Update the data dictionary records in datastore and the CKAN dataset database."""
-        context = self.get_context()
-        resource_id = self.get_data_dict_resource_id()
+        resource_id = self.get_data_dict_resource_id(context)
         data['resource_id'] = resource_id
         log.info("update_data_dictionary: Getting records for resource_id: {0} and package_id: {1}".format(resource_id, data['package_id']))
-        records = self.get_data_dictionary_records(data['package_id'], resource_id)
+        records = self.get_data_dictionary_records(context, data['package_id'], resource_id)
 
         for r in records:
             req = {'resource_id': resource_id, 'filters': {'id': r['id']}}
@@ -88,13 +94,20 @@ class BaseDDController(BaseController):
 class ApiController(BaseDDController):
     """Controller for API actions."""
 
+    def get_context(self):
+        """Context of the API request."""
+        return {}
+
     def dictionary_update(self):
         """Update the dictionary for a given package."""
+        context=self.get_context()
+       
         try:
             if request.method == 'POST':
+                check_access('dictionary_update', context)
                 log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
                 log.info("dictionary_update:request.body:{0}".format(request.body))
-                self.update_data_dictionary(json.loads(request.body))
+                self.update_data_dictionary(context, json.loads(request.body))
                 response.status_int = 200
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": True})
@@ -103,14 +116,28 @@ class ApiController(BaseDDController):
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": False ,"error": {"messsage": "Not Implemented"}})
         except Exception as e:
-                response.status_int = 500
-                response.headers['Content-Type'] = "application/json"
-                log.error("dictionary_update:Exception: {0}".format(e.message))
-                return json.dumps({"success": False ,"error": {"messsage": "Exception"}})   
+            response.status_int = 500
+            response.headers['Content-Type'] = "application/json"
+            log.error("dictionary_update:Exception: {0}".format(e.message))
+            return json.dumps({"success": False ,"error": {"messsage": "Exception"}})   
+        except NotAuthorized:
+            response.status_int = 403
+            response.headers['Content-Type'] = "application/json"
+            log.error("dictionary_update:Exception: {0}".format(e.message))
+            return json.dumps({"success": False ,"error": {"messsage": "NotAuthorized"}})   
+            
 
 
 class DDController(BaseDDController):
     """Controller used for UI logic."""
+
+    def get_context(self):
+        """Get the context object used by CKAN actions."""
+        return {'model': model,
+                'session': model.Session,
+                'user': c.user or c.author,
+                'auth_user_obj': c.userobj}
+
 
     def _resource_form(self, package_type):
         """Backwards compatibility with plugins not inheriting from DefaultDatasetPlugin and not implmenting resource_form."""
@@ -123,9 +150,9 @@ class DDController(BaseDDController):
 
     def edit_dictionary(self, id, data=None, errors=None):
         """Edit dictionary."""
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'for_view': True,
-                   'auth_user_obj': c.userobj, 'use_cache': False}
+        context=self.get_context()
+        context['for_view']=True
+        context['use_cache']=False
 
         resource_ids = None
 
@@ -165,22 +192,6 @@ class DDController(BaseDDController):
         except NotAuthorized:
             abort(401, _('Unauthorized to read dataset %s') % id)
         return render("package/edit_data_dict.html", extra_vars={'package_id': id})
-
-    def update_schema_field(self, context, package_id, schema):
-        """Update the value of the _schema field the given package."""
-        package = get_action('package_show')(context, {"id": package_id})
-      
-        key_found = False
-        for e in package['extras']:
-            if e['key'] == '_schema':
-                e['value'] = json.dumps({"fields": schema})
-                key_found = True
-                break
-
-        if not key_found:
-            e['extras'].append({'key': '_schema', 'value': json.dumps({"fields": schema})})
-
-        get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
 
     def get_row_count_from_params(self):
         """Determine how many form rows are being passed in via HTTP parameters."""
@@ -237,7 +248,7 @@ class DDController(BaseDDController):
                     for i in range(0, rowCount):
                         data['records'].append(self.get_record_from_params(data['package_id'], resource_ids, i))
 
-                    self.update_data_dictionary(data)
+                    self.update_data_dictionary(context, data)
             except NotFound:
                 abort(404, _('Dataset not found'))
             except NotAuthorized:
