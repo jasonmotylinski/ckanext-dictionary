@@ -15,7 +15,7 @@ import ckan.lib.render
 from ckan.authz import is_authorized
 from ckan.common import _, json, request, c, response
 from ckan.lib.base import BaseController
-
+from ckan.views import identify_user
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +96,11 @@ class ApiController(BaseDDController):
 
     def get_context(self):
         """Context of the API request."""
-        return {}
+        identify_user()
+
+        return {'model': model, 
+                'user': c.user,
+                'auth_user_obj': c.userobj}
 
     def dictionary_update(self):
         """Update the dictionary for a given package."""
@@ -118,7 +122,7 @@ class ApiController(BaseDDController):
         except NotAuthorized as e:
             response.status_int = 403
             response.headers['Content-Type'] = "application/json"
-            log.error("dictionary_update:Exception: {0}".format(e.message))
+            log.error("dictionary_update:NotAuthorized: {0}".format(e.message))
             return json.dumps({"success": False ,"error": {"messsage": "NotAuthorized"}})   
         except Exception as e:
             response.status_int = 500
