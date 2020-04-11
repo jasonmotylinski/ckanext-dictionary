@@ -106,7 +106,7 @@ class ApiController(BaseDDController):
     def dictionary_update(self):
         """Update the dictionary for a given package."""
         context=self.get_context()
-       
+        log.info("dictionary_update:context:{0}".format(context))
         try:
             if request.method == 'POST':
                 check_access('dictionary_update', context)
