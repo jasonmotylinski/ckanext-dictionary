@@ -88,6 +88,7 @@ class BaseDDController(BaseController):
 class ApiController(BaseDDController):
     """Controller for API actions."""
 
+    @ckan.logic.auth_disallow_anonymous_access
     def dictionary_update(self):
         """Update the dictionary for a given package."""
         if is_authorized("dictionary_update", self.get_context()):
