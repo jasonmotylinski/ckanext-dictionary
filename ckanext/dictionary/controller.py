@@ -13,7 +13,7 @@ import ckan.lib.plugins
 import ckan.lib.render
 
 from ckan.authz import is_authorized
-from ckan.common import _, json, request, c, response
+from ckan.common import _, json, request, c, g, response
 from ckan.lib.base import BaseController
 from ckan.views import identify_user
 
@@ -99,8 +99,9 @@ class ApiController(BaseDDController):
         identify_user()
 
         return {'model': model, 
-                'user': c.user,
-                'auth_user_obj': c.userobj}
+                'user': g.user,
+                'author': g.author,
+                'auth_user_obj': g.userobj}
 
     def dictionary_update(self):
         """Update the dictionary for a given package."""
