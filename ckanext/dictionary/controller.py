@@ -88,29 +88,25 @@ class BaseDDController(BaseController):
 class ApiController(BaseDDController):
     """Controller for API actions."""
 
-    @ckan.logic.auth_disallow_anonymous_access
     def dictionary_update(self):
         """Update the dictionary for a given package."""
-        if is_authorized("dictionary_update", self.get_context()):
-            try:
-                if request.method == 'POST':
-                    log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
-                    log.info("dictionary_update:request.body:{0}".format(request.body))
-                    self.update_data_dictionary(json.loads(request.body))
-                    response.status_int = 200
-                    response.headers['Content-Type'] = "application/json"
-                    return json.dumps({"success": True})
-                else:
-                    response.status_int = 501
-                    response.headers['Content-Type'] = "application/json"
-                    return json.dumps({"success": False ,"error": {"messsage": "Not Implemented"}})
-            except Exception as e:
-                    response.status_int = 500
-                    response.headers['Content-Type'] = "application/json"
-                    log.error("dictionary_update:Exception: {0}".format(e.message))
-                    return json.dumps({"success": False ,"error": {"messsage": "Exception"}})
-        else:
-            return json.dumps({"success": False ,"error": {"messsage": "Unauthorizee"}})    
+        try:
+            if request.method == 'POST':
+                log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
+                log.info("dictionary_update:request.body:{0}".format(request.body))
+                self.update_data_dictionary(json.loads(request.body))
+                response.status_int = 200
+                response.headers['Content-Type'] = "application/json"
+                return json.dumps({"success": True})
+            else:
+                response.status_int = 501
+                response.headers['Content-Type'] = "application/json"
+                return json.dumps({"success": False ,"error": {"messsage": "Not Implemented"}})
+        except Exception as e:
+                response.status_int = 500
+                response.headers['Content-Type'] = "application/json"
+                log.error("dictionary_update:Exception: {0}".format(e.message))
+                return json.dumps({"success": False ,"error": {"messsage": "Exception"}})   
 
 
 class DDController(BaseDDController):
