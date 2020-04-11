@@ -115,16 +115,16 @@ class ApiController(BaseDDController):
                 response.status_int = 501
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": False ,"error": {"messsage": "Not Implemented"}})
-        except Exception as e:
-            response.status_int = 500
-            response.headers['Content-Type'] = "application/json"
-            log.error("dictionary_update:Exception: {0}".format(e.message))
-            return json.dumps({"success": False ,"error": {"messsage": "Exception"}})   
         except NotAuthorized:
             response.status_int = 403
             response.headers['Content-Type'] = "application/json"
             log.error("dictionary_update:Exception: {0}".format(e.message))
             return json.dumps({"success": False ,"error": {"messsage": "NotAuthorized"}})   
+        except Exception as e:
+            response.status_int = 500
+            response.headers['Content-Type'] = "application/json"
+            log.error("dictionary_update:Exception: {0}".format(e.message))
+            return json.dumps({"success": False ,"error": {"messsage": "Exception"}})   
             
 
 
