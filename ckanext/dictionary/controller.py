@@ -86,6 +86,7 @@ class BaseDDController(BaseController):
         if len(data['records']) > 0:
             for i in range(0, len(data['records'])):
                     data['records'][i]['id'] = i
+                    data['records'][i]['package_id']=data['package_id']
 
             log.info("update_data_dictionary: Update dataset schema for package_id : {0} data: {1}".format(data['package_id'], data))
             self.update_schema_field(context, data['package_id'], data["records"])
@@ -222,7 +223,7 @@ class DDController(BaseDDController):
         datadesc = request.params.get(varNames[2])
         datatitle = request.params.get(varNames[3])
         dataformat = request.params.get(varNames[4])
-        return {'package_id': package_id, 'field_name': datafield, 'description': datadesc, "title": datatitle, "format": dataformat}
+        return {'field_name': datafield, 'description': datadesc, "title": datatitle, "format": dataformat}
 
     def new_data_dictionary(self, id):
         """Update the data dictionary for a given package from the web for."""
