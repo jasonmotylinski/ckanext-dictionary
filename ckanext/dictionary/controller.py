@@ -91,7 +91,8 @@ class ApiController(BaseDDController):
         """Update the dictionary for a given package."""
         try:
             if request.method == 'POST':
-                body = json.load(request.data)
+                log.error("dictionary_update:POST")
+                body = json.loads(request.data)
                 self.update_data_dictionary(body)
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"status": "ok"})
@@ -102,7 +103,7 @@ class ApiController(BaseDDController):
         except Exception as e:
                 response.status_int = 500
                 response.headers['Content-Type'] = "application/json"
-                log.error("dictionary_update. Exception: {0}".format(e.message))
+                log.error("dictionary_update:Exception: {0}".format(e.message))
                 return json.dumps({"status": "error"})
 
 
