@@ -233,7 +233,7 @@ class DDController(BaseDDController):
 
         if request.method == 'POST':
             context = self.get_context()
-            resource_ids = self.get_data_dict_resource_id()
+            resource_ids = self.get_data_dict_resource_id(context)
 
             if resource_ids is None:
                 log.info("new_data_dictionary: data_dict not found in DataStore. Creating")
