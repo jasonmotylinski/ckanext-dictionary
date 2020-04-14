@@ -67,7 +67,7 @@ class BaseDDController(BaseController):
                 break
 
         if not key_found:
-            e['extras'].append({'key': '_schema', 'value': json.dumps({"fields": schema})})
+            package['extras'].append({'key': '_schema', 'value': json.dumps({"fields": schema})})
 
         get_action('package_patch')(context, {"id": package_id, "extras": package['extras']})
 
