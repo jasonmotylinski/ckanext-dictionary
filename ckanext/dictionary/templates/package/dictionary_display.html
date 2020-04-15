@@ -18,7 +18,7 @@
 	        <tr>
 	          <td> {{dictVal['field_name']}} </td>
             <td> {{dictVal['format']}}  </td>
-	          <td> {{dictVal['description']}}  </td>
+	          <td> {{ dictVal['description'] if dictVal['description'] != None else '' }}  </td>
 	        </tr>
 	      {% endif %}
       {% endfor %}
