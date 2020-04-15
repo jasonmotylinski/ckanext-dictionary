@@ -39,37 +39,8 @@
 
           <div class="control-group" style="margin:1px;">
             <div class="row">
-              <div class="col-md-3"><input id="field-{{ index }}" class="field" type="text" name="field_{{ index }}" value="{{current_data_dict['field_name']}}" style="width:100%" /></div>
-              <div class="col-md-3">
-                <select class="col-md-12" name="format_{{index}}" class="format">
-                  <option value=""></option>
-                  <optgroup label="String">
-                    <option value="Default String" {% if current_data_dict['format'] == "Default String" %} selected {% endif %}>Default String</option>
-                    <option value="Email" {% if current_data_dict['format'] == "Email" %} selected {% endif %}>Email</option>
-                    <option value="URI" {% if current_data_dict['format'] == "URI" %} selected {% endif %}>URI</option>
-                    <option value="Binary" {% if current_data_dict['format'] == "Binary" %} selected {% endif %}>Binary</option>
-                    <option value="UUID" {% if current_data_dict['format'] == "UUID" %} selected {% endif %}>UUID</option>
-                  </optgroup>
-                  <optgroup label="Number">
-                    <option value="Default Number" {% if current_data_dict['format'] == "Default Number" %} selected {% endif %}>Default Number</option>
-                    <option value="Integer" {% if current_data_dict['format'] == "Integer" %} selected {% endif %}>Integer</option>
-                    <option value="Currency" {% if current_data_dict['format'] == "Currency" %} selected {% endif %}>Currency</option>
-                  </optgroup>
-                  <optgroup label="Date/Time">
-                    <option value="ISO8601 Date" {% if current_data_dict['format'] == "ISO8601 Date" %} selected {% endif %}>ISO8601 Date</option>
-                    <option value="Other Date" {% if current_data_dict['format'] == "Other Date" %} selected {% endif %}>Other Date</option>
-                    <option value="Duration" {% if current_data_dict['format'] == "Duration" %} selected {% endif %}>Duration</option>
-                  </optgroup>
-                  <optgroup label="Other">
-                    <option value="Boolean" {% if current_data_dict['format'] == "Boolean" %} selected {% endif %}>Boolean</option>
-                    <option value="Geopoint" {% if current_data_dict['format'] == "Geopoint" %} selected {% endif %}>Geopoint</option>
-                    <option value="GeoJSON" {% if current_data_dict['format'] == "GeoJSON" %} selected {% endif %}>GeoJSON</option>
-                    <option value="TopoJSON" {% if current_data_dict['format'] == "TopoJSON" %} selected {% endif %}>TopoJSON</option>
-                    <option value="JSON Object" {% if current_data_dict['format'] == "JSON Object" %} selected {% endif %}>JSON Object</option>
-                    <option value="JSON Array" {% if current_data_dict['format'] == "JSON Array" %} selected {% endif %}>JSON Array</option>
-                  </optgroup>
-                </select>
-              </div>
+              <div class="col-md-3"><input id="field-{{index}}" class="field" type="text" name="field_{{ index }}" value="{{current_data_dict['field_name']}}" style="width:100%" /></div>
+              <div class="col-md-3"><input id="format-{{index}}" class="format" type="text" name="format_{{index}}" value="{{current_data_dict['format'] if current_data_dict['format'] != None else '' }} " style="width:100%"/></div>
               <div class="col-md-6">
                 <input id="description-{{ index }}" class="description" type="text" name="description_{{ index }}" value="{{current_data_dict['description'] if current_data_dict['description'] != None else '' }}" style="width:88%" />
                 <a class="btn btn-default btn-small btn-remove" data-module="dictionary_remove_field"><i class="fa fa-minus"></i></a>
