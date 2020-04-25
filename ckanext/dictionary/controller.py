@@ -37,16 +37,35 @@ lookup_package_plugin = ckan.lib.plugins.lookup_package_plugin
 
 class BaseDDController(BaseController):
     """Base controller class to manage the UI and API."""
+    
+    def _create_data_dict_table(self, context):
+        """If the dictionary table does not exist, create it."""
+        create = {'resource': {'package_id': id},
+                  'aliases': 'data_dict',
+                  'fields': [{'id': 'package_id', 'type': 'text'},
+                            {'id': 'id', 'type': 'int4'},
+                            {'id': 'title', 'type': 'text'},
+                            {'id': 'field_name', 'type': 'text'},
+                            {'id': 'format', 'type': 'text'},
+                            {'id': 'description', 'type': 'text'}]}
+        return get_action('datastore_create')(context, create)
 
     def get_data_dict_resource_id(self, context):
-        """Get the Datastore resource ID for the data_dict tables."""
+        """Get the Datastore resource ID for the data_dict table."""
         tables = get_action('datastore_search')(context, {'resource_id': '_table_metadata'})
+        
+        resource_id=None
+        
         for t in tables['records']:
             if t['name'] == "data_dict":
                 resource_id = t['alias_of']
-                log.info("get_data_dict_table: Found existing data_dictionary DataStore. alias_of: {0}".format(resource_id))
-                return resource_id
-        return None
+                log.info("get_data_dict_resource_id: Found existing data_dictionary DataStore. alias_of: {0}".format(resource_id))
+        
+        if resource_id is None:
+            new_table=self._create_data_dict_table(context)
+            return new_table['id']
+
+        return resource_id
 
     def get_data_dictionary_records(self, context, package_id, resource_id):
         """Get the data dictionary records from the database."""
@@ -136,7 +155,6 @@ class ApiController(BaseDDController):
             response.headers['Content-Type'] = "application/json"
             log.error("dictionary_update:Exception: {0}".format(e.message))
             return json.dumps({"success": False ,"error": {"messsage": "Exception"}})   
-            
 
 
 class DDController(BaseDDController):
@@ -159,38 +177,15 @@ class DDController(BaseDDController):
                 return result
         return lookup_package_plugin().resource_form()
 
+
     def edit_dictionary(self, id, data=None, errors=None):
         """Edit dictionary."""
         context=self.get_context()
         context['for_view']=True
         context['use_cache']=False
 
-        resource_ids = None
-
-        meta_dict = {'resource_id': '_table_metadata'}
-        tables = get_action('datastore_search')(context, meta_dict)
-        for t in tables['records']:
-            if t['name'] == "data_dict":
-                resource_ids = t['alias_of']
-
-        if resource_ids is None:
-            create = {'resource': {'package_id': id},
-                      'aliases': 'data_dict',
-                      'fields': [{'id': 'package_id', 'type': 'text'},
-                                 {'id': 'id', 'type': 'int4'},
-                                 {'id': 'title', 'type': 'text'},
-                                 {'id': 'field_name', 'type': 'text'},
-                                 {'id': 'format', 'type': 'text'},
-                                 {'id': 'description', 'type': 'text'}]}
-            get_action('datastore_create')(context, create)
-            meta_dict = {'resource_id': '_table_metadata'}
-            tables = get_action('datastore_search')(context, meta_dict)
-            for t in tables['records']:
-                print(t['name'])
-                if t['name'] == "data_dict":
-                    resource_ids = t['alias_of']
-
-        data_dict_dict = {'resource_id': resource_ids, 'filters': {'package_id': id}, 'sort': ['id']}
+        resource_id=self.get_data_dict_resource_id(context)
+        data_dict_dict = {'resource_id': resource_id, 'filters': {'package_id': id}, 'sort': ['id']}
 
         try:
             pkg_data_dictionary = get_action('datastore_search')(context, data_dict_dict)
@@ -233,24 +228,7 @@ class DDController(BaseDDController):
 
         if request.method == 'POST':
             context = self.get_context()
-            resource_ids = self.get_data_dict_resource_id(context)
-
-            if resource_ids is None:
-                log.info("new_data_dictionary: data_dict not found in DataStore. Creating")
-                create = {'resource': {'package_id': id},
-                          'aliases': 'data_dict',
-                          'fields': [{'id': 'package_id', 'type': 'text'},
-                                     {'id': 'id', 'type': 'int4'},
-                                     {'id': 'title', 'type': 'text'},
-                                     {'id': 'field_name', 'type': 'text'},
-                                     {'id': 'format', 'type': 'text'},
-                                     {'id': 'description', 'type': 'text'}]}
-                get_action('datastore_create')(context, create)
-                meta_dict = {'resource_id': '_table_metadata'}
-                tables = get_action('datastore_search')(context, meta_dict)
-                for t in tables['records']:
-                    if t['name'] == "data_dict":
-                        resource_ids = t['alias_of']
+            resource_id = self.get_data_dict_resource_id(context)
 
             try:
                 rowCount = self.get_row_count_from_params()
@@ -269,13 +247,13 @@ class DDController(BaseDDController):
 
     def dictionary(self, id):
         """Render logic for displaying the dictionary for a given package."""
+
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
                    'auth_user_obj': c.userobj, 'use_cache': False}
         data_dict = {'id': id}
         try:
             log.info("dictionary: trying to get the data_dict")
-
             c.pkg_dict = get_action('package_show')(context, data_dict)
             dataset_type = c.pkg_dict['type'] or 'dataset'
         except NotFound:
@@ -285,35 +263,11 @@ class DDController(BaseDDController):
 
         context = self.get_context()
 
-        resource_ids = None
-        try:
-            meta_dict = {'resource_id': '_table_metadata'}
-            tables = get_action('datastore_search')(context, meta_dict)
-            for t in tables['records']:
-                print(t['name'])
-                if t['name'] == "data_dict":
-                    resource_ids = t['alias_of']
-        except:
-            resource_ids = None
-            if resource_ids == None:
-                create = {'resource':{'package_id':id},'aliases':'data_dict','fields':[{'id':'package_id','type':'text'},{'id':'id','type':'int4'},{'id':'title','type':'text'},{'id':'field_name','type':'text'},{'id':'format','type':'text'},{'id':'description','type':'text'}]}
-                log.info("dictionary: creating the data_dict table in the datastore")
-                get_action('datastore_create')(context, create)
+        resource_id = self.get_data_dict_resource_id(context)
                 
-                meta_dict = {'resource_id': '_table_metadata'}
-                tables = get_action('datastore_search')(context, meta_dict)
-                for t in tables['records']:
-                    print(t['name'])
-                    if t['name'] == "data_dict":
-                        resource_ids = t['alias_of']
-        data_dict_dict = {'resource_id': resource_ids, 'filters': {'package_id':id},'sort':['id']}
+        data_dict_dict = {'resource_id': resource_id, 'filters': {'package_id':id},'sort':['id']}
+        pkg_data_dictionary = get_action('datastore_search')(context, data_dict_dict)
+        print(pkg_data_dictionary['records'])
+        c.pkg_data_dictionary = pkg_data_dictionary['records']
 
-        try:
-            pkg_data_dictionary = get_action('datastore_search')(context, data_dict_dict)
-            print(pkg_data_dictionary['records'])
-            c.pkg_data_dictionary = pkg_data_dictionary['records']
-        except NotFound:
-            abort(404, _('Dataset not found'))
-        except NotAuthorized:
-            abort(401, _('Unauthorized to read dataset %s') % id)
         return render('package/dictionary_display.html', {'dataset_type': dataset_type})
