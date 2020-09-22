@@ -124,6 +124,7 @@ class ApiController(BaseDDController):
         return {'model': model, 
                 'user': g.user,
                 'author': g.author,
+                'ignore_auth': True,
                 'auth_user_obj': g.userobj}
 
     def dictionary_update(self):
