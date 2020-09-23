@@ -66,6 +66,7 @@ def update_data_dictionary(context, data):
 
         log.info("update_data_dictionary: Create records for resource_id: {0} data: {1}".format(resource_id, data))
         get_action('datastore_create')(context, data)
+    return {"success": True}
 
 def update_schema_field(context, package_id, schema):
     """Update the value of the _schema field the given package."""

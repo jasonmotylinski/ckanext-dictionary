@@ -43,7 +43,6 @@ class ApiController(BaseController):
         return {'model': model, 
                 'user': g.user,
                 'author': g.author,
-                'ignore_auth': True,
                 'auth_user_obj': g.userobj}
 
     def dictionary_update(self):
@@ -55,7 +54,7 @@ class ApiController(BaseController):
                 log.info("dictionary_update:POST:Content-Type:{0}".format(request.content_type))
                 log.info("dictionary_update:request.body:{0}".format(request.body))
 
-                check_access('update_data_dictionary', context)
+                check_access('update_data_dictionary', context, json.loads(request.body))
                 response.status_int = 200
                 response.headers['Content-Type'] = "application/json"
                 return json.dumps({"success": True})
@@ -170,8 +169,9 @@ class DDController(BaseController):
                    'auth_user_obj': c.userobj, 'use_cache': False}
         data_dict = {'id': id}
         try:
-            log.info("dictionary: trying to get the data_dict")
+            log.info("DDController:dictionary: trying to get the data_dict")
             c.pkg_dict = get_action('package_show')(context, data_dict)
+            log.info("DDController:dictionary: pkg_dict:{0}".format(c.pkg_dict))
             dataset_type = c.pkg_dict['type'] or 'dataset'
         except NotFound:
             abort(404, _('Dataset not found'))
