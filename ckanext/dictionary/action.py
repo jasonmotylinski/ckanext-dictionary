@@ -50,11 +50,12 @@ def update_data_dictionary(context, data):
     data['resource_id'] = resource_id
     log.info("update_data_dictionary: Getting records for resource_id: {0} and package_id: {1}".format(resource_id, data['package_id']))
     records = get_data_dictionary_records(context, data['package_id'], resource_id)
+    log.info("update_data_dictionary: Found records for resource_id: {0} and package_id: {1}: Records: {2}".format(resource_id, data['package_id'], records))
 
-    for r in records:
-        req = {'resource_id': resource_id, 'filters': {'id': r['id']}}
-        log.info("update_data_dictionary: Deleting record resource_id: {0} id: {1}".format(resource_id, r['id']))
-        get_action('datastore_delete')(context, req)
+
+    req = {'resource_id': resource_id, 'filters': {'package_id': data['package_id']}}
+    log.info("update_data_dictionary: Deleting records resource_id: {0} package_id: {1}".format(resource_id, data['package_id']))
+    get_action('datastore_delete')(context, req)
 
     if len(data['records']) > 0:
         for i in range(0, len(data['records'])):
